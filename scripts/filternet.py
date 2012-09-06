@@ -14,6 +14,14 @@ from optparse import OptionParser
         target:
 '''
 
+'''
+		Less Friendly Configuration Options
+'''
+
+default_device	= 'eth0'
+default_ttl		= 64
+
+
 usage = "usage: %prog [options]"
 parser = OptionParser(usage)
 parser.add_option("-i", "--input", dest="input_filename", help="read host list from FILENAME")
@@ -21,6 +29,7 @@ parser.add_option("-o", "--output", dest="output_filename", help="output host li
 parser.add_option("-s", "--stateless", dest="stateless", action="store_true", help="stateless request, rather than full dance")
 parser.add_option("-v", "--verbose", action="store_true", dest="verbose")
 (options, args) = parser.parse_args()
+
 if options.input_filename == '':
         parser.print_help()
 
@@ -47,16 +56,17 @@ def callback(header, data):
         if tcp_hdr.get_RST():
                 source_ip = ip_hdr.get_ip_src()
                 dest_ip = ip_hdr.get_ip_dst()
-                print "Scanning (" + current.address + ") -- " + "RST detected: %s -> %s, ttl: %s" % (source_ip, dest_ip, ip_hdr.get_ip_ttl())
+                
+                print "TCP Reset Recieved: Around IP:  [ttl: %s]  (Scanning: %s)" % (source_ip, dest_ip, ip_hdr.get_ip_ttl(), current.address)                
                 return
 
 # Open our pcap session
 
-sniff = pcapy.open_live("eth0", 1500, 1, 100)
+sniff = pcapy.open_live(default_device, 1500, 1, 100)
 sniff.setfilter('ip proto \\tcp')
 
-#thread = watchThread(sniff);
-#thread.start()
+thread = watchThread(sniff);
+thread.start()
 
 target = Host()
 target.address  = "www.balatarin.com"
@@ -73,12 +83,12 @@ else:
         print 'Code: ' + str(f.getcode())
         f.close()
 
-target.traceroute,_ = traceroute(target.address, dport=80, maxttl=64, verbose=0)
+target.traceroute,_ = traceroute(target.address, dport=80, maxttl=default_ttl, verbose=0)
 
 print target.traceroute.get_trace().values()[0]
-print target.traceroute.get_trace().values()[0][1]
+print target.traceroute.get_trace().values()[0][1][0]
 
-#thread.join()
+thread.join()
 
 
 
