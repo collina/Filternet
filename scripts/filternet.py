@@ -79,7 +79,7 @@ def callback(header, data):
 try:
 	
 	sniff = pcapy.open_live(default_device, 1500, 1, 100)
-	sniff.setfilter('ip proto \\tcp or \\udp or \\icmp')
+	sniff.setfilter('ip proto \\tcp or \\icmp')
 	
 	thread = watchThread(sniff);
 	thread.start()
