@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python26
  
 import pcapy, sys, random, threading, urllib
 from impacket import ImpactDecoder
