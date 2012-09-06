@@ -76,6 +76,7 @@ else:
 target.traceroute,_ = traceroute(target.address, dport=80, maxttl=64, verbose=0)
 
 print target.traceroute.get_trace().values()[0]
+print target.traceroute.get_trace().values()[0][1]
 
 #thread.join()
 
