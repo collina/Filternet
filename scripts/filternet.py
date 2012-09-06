@@ -61,20 +61,20 @@ def callback(header, data):
         ip_hdr = ethernet_pck.child()
         tcp_hdr = ip_hdr.child()
 
-                source_ip = ip_hdr.get_ip_src()
-                dest_ip = ip_hdr.get_ip_dst()
+		source_ip = ip_hdr.get_ip_src()
+		dest_ip = ip_hdr.get_ip_dst()
 
         if tcp_hdr.get_RST():                
                 print "TCP Reset Received: Around IP:  [ttl: %s]  (Scanning: %s)" % (source_ip, ip_hdr.get_ip_ttl(), current.address)                
 
 		print tcp_hdr
+		return
         '''
         if ICMP Permission Denied:                
                 print "ICMP Permission Denied Received: Around IP:  [ttl: %s]  (Scanning: %s)" % (source_ip, ip_hdr.get_ip_ttl(), current.address)                
         if Blocked Page:                
                 print "HTML Response Received: Around IP:  [ttl: %s]  (Scanning: %s)" % (source_ip, ip_hdr.get_ip_ttl(), current.address)                
         '''
-		return
 
 try:
 	
