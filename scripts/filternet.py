@@ -57,13 +57,13 @@ def callback(header, data):
                 source_ip = ip_hdr.get_ip_src()
                 dest_ip = ip_hdr.get_ip_dst()
                 
-                print "TCP Reset Recieved: Around IP:  [ttl: %s]  (Scanning: %s)" % (source_ip, dest_ip, ip_hdr.get_ip_ttl(), current.address)                
+                print "TCP Reset Recieved: Around IP:  [ttl: %s]  (Scanning: %s)" % (source_ip, ip_hdr.get_ip_ttl(), current.address)                
                 return
 
 # Open our pcap session
 
 sniff = pcapy.open_live(default_device, 1500, 1, 100)
-sniff.setfilter('ip proto \\tcp')
+sniff.setfilter('ip proto \\tcp or \\udp or \\icmp')
 
 thread = watchThread(sniff);
 thread.start()
