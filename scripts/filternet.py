@@ -38,19 +38,19 @@ parser.add_option("-v", "--verbose", action="store_true", dest="verbose")
 (options, args) = parser.parse_args()
 
 if options.input_filename == '':
-        parser.print_help()
+	parser.print_help()
 
 class Host:
-        address = ''
-        host    = ''
-        traceroute = ''
+	address = ''
+	host    = ''
+	traceroute = ''
 
 class watchThread(threading.Thread):
-     def __init__(self,sniff):
-        threading.Thread.__init__(self)
-        self.sniff = sniff;
-     def run(self):
-        self.sniff.loop(0, callback)
+	def __init__(self,sniff):
+		threading.Thread.__init__(self)
+		self.sniff = sniff;
+	def run(self):
+		self.sniff.loop(0, callback)
  
 def callback(header, data):
 	global current
@@ -88,7 +88,7 @@ try:
 	(target.address, target.host)  = input_line.split(',')
 	
 	if target.host == '':
-	target.host = target.address
+		target.host = target.address
 	
 	current = target
 	
