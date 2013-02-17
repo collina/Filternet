@@ -5,41 +5,62 @@
 '''
 
 	--------------------
+	About
+	--------------------
+	Networking monitoring firms have pretty tools to collect and
+	parse data on routes and performance, why shouldn't we?
+	
+	Author: Collin Anderson
+	Email: collin@averysmallbird.com
+	Version: 1.0-pre
+	--------------------
 	Datasource
 	--------------------
 
-	scamper -p 200 -c "trace -P TCP -d 80 -g 3 -w 3 -f 2" -O warts -o outfile infile
+	We use scamper for preparation, it's pretty cool and available in repos.
+	
+	e.g. scamper -p 200 -c "trace -P TCP -d 80 -g 3 -w 3 -f 2" -O warts -o outfile infile
 
 	--------------------
-	License
+	License (BSD 2-Clause, Thanks for Caring)
 	--------------------
 	Copyright (c) 2013, Collin Anderson
 	All rights reserved.
 	
-	Redistribution and use in source and binary forms, with or without
-	modification, are permitted provided that the following conditions are met:
+	Redistribution and use in source and binary forms, with or
+	without modification, are permitted provided that the following
+	conditions are met:
 	
-	1. Redistributions of source code must retain the above copyright notice, this
-	list of conditions and the following disclaimer.
-	2. Redistributions in binary form must reproduce the above copyright notice,
-	this list of conditions and the following disclaimer in the documentation
-	and/or other materials provided with the distribution.
+	(1) Redistributions of source code must retain the above copyright
+	notice, this list of conditions and the following disclaimer.
 	
-	THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
-	ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-	WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-	DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR
-	ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
-	(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
-	LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
-	ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-	(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
-	SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+	(2) Redistributions in binary form must reproduce the above copyright
+	notice, this list of conditions and the following disclaimer in
+	the documentation and/or other materials provided with the
+	distribution.
+	
+	THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND
+	CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES,
+	INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
+	MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+	DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR
+	CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+	SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+	LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF
+	USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
+	AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+	LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
+	ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+	POSSIBILITY OF SUCH DAMAGE.
+	
+
 	--------------------
 	TODO
 	--------------------
 	* Add Better Logging
 	* Add Attribution
+	* Tighter scamper integration?!
+	
 '''
 
 import argparse
@@ -86,7 +107,7 @@ def main(args):
 	elif args['format'] == 'png' or args['format'] is None:
 		graph.write_png(args['file_out'])
 
-	pass
+	return True # superstition
 
 def traceroutes_to_nodes(graph, routes = {}, mask = {}):
 	global GEOIP_ASN, COLORS, COLOR_SE
