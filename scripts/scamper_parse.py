@@ -98,23 +98,23 @@ def traceroutes_to_nodes(graph, routes = {}, mask = {}):
 	for trace in routes:
 		if trace[0] not in nodes:			
 			label = trace[0] if trace[0] not in mask else "Masked"
-			nodes[ trace[0] ] = pydot.Node(trace[0], style="filled", shape="rect", width="2", fillcolor=COLOR_SE, fontcolor="#AAAAAA", fontsize = "18", label = label)
+			nodes[ trace[0] ] = pydot.Node(trace[0], style="filled", shape="rect", width="2", fillcolor=COLOR_SE, fontcolor="#AAAAAA", fontsize = "16", label = label)
 
 			(asn, label) = GEOIP_ASN.org_by_addr(trace[0]).split(' ', 1)
-			if asn not in cluster: cluster[asn] = cluster_baz=pydot.Cluster(asn, label=label, fillcolor="azure", style="filled, rounded", shape="rect")
+			if asn not in cluster: cluster[asn] = cluster_baz=pydot.Cluster(asn, label=label, fontsize = "18", fillcolor="azure", style="filled, rounded", shape="rect")
 			cluster[asn.split()[0]].add_node(nodes[ trace[0] ])
 		if trace[1] not in nodes:
 			label = trace[1] if trace[1] not in mask else "Masked"
-			nodes[ trace[1] ] = pydot.Node(trace[1], style="filled", shape="rect", width="2", fillcolor=COLOR_SE, fontcolor="#AAAAAA", fontsize = "18", label = label)
+			nodes[ trace[1] ] = pydot.Node(trace[1], style="filled", shape="rect", width="2", fillcolor=COLOR_SE, fontcolor="#AAAAAA", fontsize = "16", label = label)
 
 			(asn, label) = GEOIP_ASN.org_by_addr(trace[1]).split(' ', 1)
-			if asn not in cluster: cluster[asn] = cluster_baz=pydot.Cluster(asn, label=label, fillcolor="azure", style="filled, rounded", shape="rect")
+			if asn not in cluster: cluster[asn] = cluster_baz=pydot.Cluster(asn, label=label, fontsize = "18", fillcolor="azure", style="filled, rounded", shape="rect")
 			cluster[asn.split()[0]].add_node(nodes[ trace[1] ])
 		for node in routes[trace]:
 			if node not in nodes and node is not 'q':
 				(asn, label) = GEOIP_ASN.org_by_addr(node).split(' ', 1)
 				
-				if asn not in cluster: cluster[asn] = pydot.Cluster(asn, label=label, fillcolor="azure", style="filled, rounded", shape="rect")
+				if asn not in cluster: cluster[asn] = pydot.Cluster(asn, label=label, fontsize = "18", fillcolor="azure", style="filled, rounded", shape="rect")
 				
 				label = node if node not in mask else "Masked"
 				nodes[ node ] = pydot.Node(node, style="filled, rounded", shape="rect", bordercolor="gray50", fillcolor="azure", label = label)
