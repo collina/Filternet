@@ -101,29 +101,29 @@ def traceroutes_to_nodes(graph, routes = {}, mask = {}):
 			nodes[ trace[0] ] = pydot.Node(trace[0], style="filled", shape="rect", width="2", fillcolor=COLOR_SE, fontcolor="#AAAAAA", fontsize = "18", label = label)
 
 			(asn, label) = GEOIP_ASN.org_by_addr(trace[0]).split(' ', 1)
-			if asn not in cluster: cluster[asn] = cluster_baz=pydot.Cluster(asn, label=label)
+			if asn not in cluster: cluster[asn] = cluster_baz=pydot.Cluster(asn, label=label, fillcolor="azure", style="filled, rounded", shape="rect")
 			cluster[asn.split()[0]].add_node(nodes[ trace[0] ])
 		if trace[1] not in nodes:
 			label = trace[1] if trace[1] not in mask else "Masked"
 			nodes[ trace[1] ] = pydot.Node(trace[1], style="filled", shape="rect", width="2", fillcolor=COLOR_SE, fontcolor="#AAAAAA", fontsize = "18", label = label)
 
 			(asn, label) = GEOIP_ASN.org_by_addr(trace[1]).split(' ', 1)
-			if asn not in cluster: cluster[asn] = cluster_baz=pydot.Cluster(asn, label=label)
+			if asn not in cluster: cluster[asn] = cluster_baz=pydot.Cluster(asn, label=label, fillcolor="azure", style="filled, rounded", shape="rect")
 			cluster[asn.split()[0]].add_node(nodes[ trace[1] ])
 		for node in routes[trace]:
 			if node not in nodes and node is not 'q':
 				(asn, label) = GEOIP_ASN.org_by_addr(node).split(' ', 1)
 				
-				if asn not in cluster: cluster[asn] = pydot.Cluster(asn, label=label, fillcolor="azure")
+				if asn not in cluster: cluster[asn] = pydot.Cluster(asn, label=label, fillcolor="azure", style="filled, rounded", shape="rect")
 				
 				label = node if node not in mask else "Masked"
-				nodes[ node ] = pydot.Node(node, style="filled", fillcolor="azure", label = label)
+				nodes[ node ] = pydot.Node(node, style="filled, rounded", shape="rect", bordercolor="gray50", fillcolor="azure", label = label)
 				
 				cluster[asn.split()[0]].add_node(nodes[ node ])
 	for node in sorted(nodes):
 		(asn, label) = GEOIP_ASN.org_by_addr(node).split(' ', 1)
-		if nodes[node].get("fillcolor") is COLOR_SE: continue;
-		nodes[node].set("fillcolor", COLORS[cluster.keys().index(asn) % len(COLORS)])
+		if nodes[node].get("fillcolor") is not COLOR_SE: 
+			nodes[node].set("fillcolor", COLORS[cluster.keys().index(asn) % len(COLORS)])
 	for asn in cluster:
 		graph.add_subgraph(cluster[asn])
 	return nodes
@@ -143,20 +143,17 @@ def traceroutes_to_edges(graph, routes = {}, nodes = {}):
 				if item is 0:
 					pass
 				else: 
-					label	= 'Skipped %s' % ( unresp_filter['skipped']) if unresp_filter['skipped'] is not 0 else ''
+					label	= '* (%s)' % ( unresp_filter['skipped']) if unresp_filter['skipped'] is not 0 else ''
 					line	= "#666666" if unresp_filter['skipped'] is not 0 else "#333333"
+					arrow	= "empty" 	if unresp_filter['skipped'] is not 0 else "normal" 
 
-					graph.add_edge(pydot.Edge(  nodes[routes[trace][unresp_filter['last_id']]], nodes[routes[trace][item]], label = label, color = line ))
+					graph.add_edge(pydot.Edge(  nodes[routes[trace][unresp_filter['last_id']]], nodes[routes[trace][item]], arrowhead = arrow, labeltooltip = label, color = line ))
 					logging.info( "Edge %s (%s, %s), skipped: %s", item, routes[trace][unresp_filter['last_id']], routes[trace][item], unresp_filter['skipped'] )
 				
 					unresp_filter['skipped'] = 0
 					unresp_filter['last_id'] = item
 				
 	return graph
-
-
-
-
 
 if __name__ == "__main__":
 	parser = argparse.ArgumentParser(
