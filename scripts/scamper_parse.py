@@ -77,13 +77,13 @@ def main(args):
 	# Now I should have an awesome traceroutes dicts
 	
 	nodes = traceroutes_to_nodes(graph, routes, mask) # create all nodes	
-	nodes = traceroutes_to_edges(graph, routes, nodes) # create all nodes	
+	nodes = traceroutes_to_edges(graph, routes, mask, nodes) # create all nodes	
 
-	if args['format'] is 'dot':
+	if args['format'] == 'dot' or args['format'] == 'raw':
 		graph.write_raw(args['file_out'])
-	elif args['format'] is 'svg':
+	elif args['format'] == 'svg':
 		graph.write_svg(args['file_out'])
-	elif args['format'] is 'png' or args['format'] is None:
+	elif args['format'] == 'png' or args['format'] is None:
 		graph.write_png(args['file_out'])
 
 	pass
@@ -91,25 +91,11 @@ def main(args):
 def traceroutes_to_nodes(graph, routes = {}, mask = {}):
 	global GEOIP_ASN, COLORS, COLOR_SE
 
-	colors	= {}
 	nodes	= {}
 	cluster	= {}
+	mask_asn = {}
 	
 	for trace in routes:
-		if trace[0] not in nodes:			
-			label = trace[0] if trace[0] not in mask else "Masked"
-			nodes[ trace[0] ] = pydot.Node(trace[0], style="filled", shape="rect", width="2", fillcolor=COLOR_SE, fontcolor="#AAAAAA", fontsize = "16", label = label)
-
-			(asn, label) = GEOIP_ASN.org_by_addr(trace[0]).split(' ', 1)
-			if asn not in cluster: cluster[asn] = cluster_baz=pydot.Cluster(asn, label=label, fontsize = "18", fillcolor="azure", style="filled, rounded", shape="rect")
-			cluster[asn.split()[0]].add_node(nodes[ trace[0] ])
-		if trace[1] not in nodes:
-			label = trace[1] if trace[1] not in mask else "Masked"
-			nodes[ trace[1] ] = pydot.Node(trace[1], style="filled", shape="rect", width="2", fillcolor=COLOR_SE, fontcolor="#AAAAAA", fontsize = "16", label = label)
-
-			(asn, label) = GEOIP_ASN.org_by_addr(trace[1]).split(' ', 1)
-			if asn not in cluster: cluster[asn] = cluster_baz=pydot.Cluster(asn, label=label, fontsize = "18", fillcolor="azure", style="filled, rounded", shape="rect")
-			cluster[asn.split()[0]].add_node(nodes[ trace[1] ])
 		for node in routes[trace]:
 			if node not in nodes and node is not 'q':
 				(asn, label) = GEOIP_ASN.org_by_addr(node).split(' ', 1)
@@ -117,18 +103,27 @@ def traceroutes_to_nodes(graph, routes = {}, mask = {}):
 				if asn not in cluster: cluster[asn] = pydot.Cluster(asn, label=label, fontsize = "18", fillcolor="azure", style="filled, rounded", shape="rect")
 				
 				label = node if node not in mask else "Masked"
-				nodes[ node ] = pydot.Node(node, style="filled, rounded", shape="rect", bordercolor="gray50", fillcolor="azure", label = label)
+				name = node if node not in mask else "masked-" + str(mask.index(node))
 				
-				cluster[asn.split()[0]].add_node(nodes[ node ])
-	for node in sorted(nodes):
-		(asn, label) = GEOIP_ASN.org_by_addr(node).split(' ', 1)
-		if nodes[node].get("fillcolor") is not COLOR_SE: 
-			nodes[node].set("fillcolor", COLORS[cluster.keys().index(asn) % len(COLORS)])
+				nodes[ name ] = pydot.Node(name, style="filled, rounded", width = "auto", shape="rect", bordercolor="gray50", fillcolor="azure", fontcolor = "black", fontsize = "14", label = label)
+				
+				if node is trace[0] or node is trace[1]:
+					nodes[ name ].set("fillcolor", COLOR_SE)
+					nodes[ name ].set("style", "filled")
+					nodes[ name ].set("fontcolor", "#AAAAAA")
+					nodes[ name ].set("fontsize", "16")
+					nodes[ name ].set("width", "2")
+				
+				cluster[asn.split()[0]].add_node(nodes[ name ])
+			
 	for asn in cluster:
+		for node in cluster[asn].get_nodes():
+			if node.get("fillcolor") is not COLOR_SE: 
+				node.set("fillcolor", COLORS[cluster.keys().index(asn) % len(COLORS)])
 		graph.add_subgraph(cluster[asn])
 	return nodes
 
-def traceroutes_to_edges(graph, routes = {}, nodes = {}):
+def traceroutes_to_edges(graph, routes = {}, mask = {}, nodes = {}):
 	
 	for trace in routes:
 		
@@ -147,7 +142,10 @@ def traceroutes_to_edges(graph, routes = {}, nodes = {}):
 					line	= "#666666" if unresp_filter['skipped'] is not 0 else "#333333"
 					arrow	= "empty" 	if unresp_filter['skipped'] is not 0 else "normal" 
 
-					graph.add_edge(pydot.Edge(  nodes[routes[trace][unresp_filter['last_id']]], nodes[routes[trace][item]], arrowhead = arrow, labeltooltip = label, color = line ))
+					name_1 = routes[trace][unresp_filter['last_id']] if routes[trace][unresp_filter['last_id']] not in mask else "masked-" + str(mask.index( routes[trace][unresp_filter['last_id']]))
+					name_2 = routes[trace][item] if routes[trace][item] not in mask else "masked-" + str(mask.index(routes[trace][item]))
+
+					graph.add_edge(pydot.Edge(  nodes[name_1], nodes[name_2], arrowhead = arrow, labeltooltip = label, color = line ))
 					logging.info( "Edge %s (%s, %s), skipped: %s", item, routes[trace][unresp_filter['last_id']], routes[trace][item], unresp_filter['skipped'] )
 				
 					unresp_filter['skipped'] = 0
@@ -160,11 +158,11 @@ if __name__ == "__main__":
 		prog='Scamper to Pydot',
 		formatter_class=argparse.ArgumentDefaultsHelpFormatter)
 	parser.add_argument('file_out', default=None, help='Output file')
-	parser.add_argument('file_in', nargs='*', default=None, help='Scamper Warts File to Parse')
+	parser.add_argument('file_in', nargs='+', default=None, help='Scamper Warts File to Parse')
 
 	output = parser.add_argument_group('Output Controls')
-	output.add_argument('--maskip', metavar='ip', nargs='*', help='Mask IPs')
-	output.add_argument('--maskhop', metavar='hop', type=int, nargs='*', help='Mask Hops')
+	output.add_argument('--maskip', metavar='ip', nargs='+', help='Mask IPs')
+	output.add_argument('--maskhop', metavar='hop', type=int, nargs='+', help='Mask Hops')
 	output.add_argument('--format', metavar='format', choices=['dot','png','svg'], default='png', help='Output Format')
 
 	GEOIP_ASN	= pygeoip.GeoIP('./GeoIPASNum.dat')
