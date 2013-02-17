@@ -35,7 +35,11 @@
 	ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 	(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 	SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
+	--------------------
+	TODO
+	--------------------
+	* Add Better Logging
+	* Add Attribution
 '''
 
 import argparse
@@ -178,7 +182,3 @@ if __name__ == "__main__":
 		parser.print_help()
 	
 	main(args)
-
-# 		d = {'file': file, 'destip': 'fbloggs', 'hopip': 'fbloggs'}
-# # configure the logging format
-# logging.basicConfig( format= '%(asctime)-15s %(levelname)s %(name)s.%(funcName)s: %(message)s' )
